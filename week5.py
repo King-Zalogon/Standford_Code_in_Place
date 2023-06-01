@@ -206,47 +206,181 @@
 #     main() 
 
 
-from graphics import Canvas
-import random
+# from graphics import Canvas
+# import random
 
-CANVAS_WIDTH = 300
-CANVAS_HEIGHT = 300
-CIRCLE_SIZE = 20
-DELAY = 0.05
+# CANVAS_WIDTH = 300
+# CANVAS_HEIGHT = 300
+# CIRCLE_SIZE = 20
+# DELAY = 0.05
+
+# def main():
+#     canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+#     # your animation code here :)
+#     while True:
+#         mouse_location = locate_mouse(canvas)
+#         print(mouse_location)
+#         if is_inside(mouse_location):
+#             draw_circle(canvas, mouse_location[0], mouse_location[1], CIRCLE_SIZE, random_color(), random_color())
+#         else:
+#             continue
+#         time.sleep(DELAY)
+        
+
+# def locate_mouse(canvas):
+#     mouse_x = canvas.get_mouse_x()
+#     mouse_y = canvas.get_mouse_y()
+#     return(mouse_x, mouse_y)
+    
+# def draw_circle(canvas, left_x, top_y, size, color, outline):
+#     canvas.create_oval(left_x, top_y, left_x + size, top_y + size, color, outline)
+    
+# def is_inside(mouse_location):
+#     if mouse_location[0]<0 or mouse_location[1]<0:
+#         return False
+#     elif (mouse_location[0]+CIRCLE_SIZE)>300 or (mouse_location[1]+CIRCLE_SIZE)>300:
+#         return False
+#     return True
+    
+# def random_color():
+#     color_list = ['red', 'blue', 'green', 'yellow', 'beige', 'purple', 'brown', 'orange', 'pink', 'cyan', 'magenta']
+#     return random.choice(color_list)
+
+# if __name__ == "__main__":
+#     main()
+
+    
+from graphics import Canvas
+import time
+import random
+    
+CANVAS_WIDTH = 400
+CANVAS_HEIGHT = 400
+SIZE = 20
+
+# if you make this larger, the game will go slower
+DELAY = 0.5 
+
+position = [0, 0]
+old_key = 'None'
+
+player_1 = {
+    canvas: None,
+    player_id: None,
+    xy: [0, 0],
+    color: 'blue'
+}
+
+goal_1 = {
+    canvas: None,
+    goal_id: None,
+    xy: [0, 0],
+    color: 'blue'
+}
+
 
 def main():
     canvas = Canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
-    # your animation code here :)
+    
+    # TODO: your code here
+    old_key = 'None'
+    player = create_player(canvas)
+    # position = [10, 10]
+    goal = create_goal(canvas)
+    
     while True:
-        mouse_location = locate_mouse(canvas)
-        print(mouse_location)
-        if is_inside(mouse_location):
-            draw_circle(canvas, mouse_location[0], mouse_location[1], CIRCLE_SIZE, random_color(), random_color())
-        else:
-            continue
+        # print(i)
         time.sleep(DELAY)
+        key = canvas.get_last_key_press()
         
+        if key == None:
+            key = old_key
+        else:
+            old_key = key
+            
+        if key == 'Enter':
+            break
+        move_player(canvas, player, key)
 
-def locate_mouse(canvas):
-    mouse_x = canvas.get_mouse_x()
-    mouse_y = canvas.get_mouse_y()
-    return(mouse_x, mouse_y)
-    
-def draw_circle(canvas, left_x, top_y, size, color, outline):
-    canvas.create_oval(left_x, top_y, left_x + size, top_y + size, color, outline)
-    
-def is_inside(mouse_location):
-    if mouse_location[0]<0 or mouse_location[1]<0:
-        return False
-    elif (mouse_location[0]+CIRCLE_SIZE)>300 or (mouse_location[1]+CIRCLE_SIZE)>300:
-        return False
-    return True
-    
+
 def random_color():
     color_list = ['red', 'blue', 'green', 'yellow', 'beige', 'purple', 'brown', 'orange', 'pink', 'cyan', 'magenta']
     return random.choice(color_list)
-
-if __name__ == "__main__":
-    main()
-
     
+def random_position():
+    x = random.randint(0, 18) * 20 + 10
+    y = random.randint(0, 18) * 20 + 10
+    return [x, y]
+
+def create_rectangle(canvas, x=10, y=10, color=random_color()):
+    
+    left_x = x - SIZE/2
+    right_x = x + SIZE/2
+    top_y = y - SIZE/2
+    bottom_y = y + SIZE/2
+    
+    rectangle = canvas.create_rectangle(left_x, top_y, right_x, bottom_y, color)
+    return rectangle
+
+def create_player(canvas):
+    x=10 
+    y=10
+    color="blue"
+    player = create_rectangle(canvas, x, y, color)
+    # print(type(player))
+    return player
+
+def create_goal(canvas):
+    xy = random_position()
+    x = xy[0]
+    y = xy[1]
+    goal = create_rectangle(canvas, x, y)
+    # print(goal)
+    return goal
+
+def random_direction():
+    x = 0
+    y = 0
+    if random.choice([True, False]):
+        x = random.choice([-1, 1]) * 20
+        #x = 20
+    else:
+        y = random.choice([-1, 1]) * 20
+        #y = 20
+    return [x, y]
+
+def move_player(canvas, player, key):
+    # direction = random_direction()
+    # dx = direction[0]
+    # print(dx)
+    # dy = direction[1]
+    # print(dy)
+    
+    # if (position[0] + dx) < 0 or (position[0] + dx) > 380:
+    #     position[0] = position[0] - dx
+    # else:
+    #     position[0] = position[0] + dx
+    
+    # if (position[1] + dy) < 0 or (position[1] + dy) > 380:
+    #     position[1] = position[1] - dy
+    # else:
+    #     position[1] = position[1] + dy    
+    # print(f'New x = {position[0]}')
+    # print(f'New y = {position[1]}')
+    # # canvas.move(player, dx, dy)
+    if key == 'ArrowLeft':
+        position[0] = position[0] - 20
+    if key == 'ArrowRight':
+        position[0] = position[0] + 20
+    if key == 'ArrowUp':
+        position[1] = position[1] - 20
+    if key == 'ArrowDown':
+        position[1] = position[1] + 20
+    
+    canvas.moveto(player, position[0], position[1])
+    
+def check_overlap():
+    objs = canvas.find_overlapping(left_x, top_y, right_x, bottom_y)   
+
+if __name__ == '__main__':
+    main()
