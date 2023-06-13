@@ -4,101 +4,75 @@ Allow to print, add and remove ingredients (as a str or list of str).
 Should also be iterable by the function/class that checks available ingredients agains those needed by any given recipe.
 """
 
-class my_ingredients:
-    
-    def __init__(self):
-        self.cooking_ingredients = [
-        'Salt',
-        'Pepper',
-        'Olive oil',
-        'Butter',
-        'Garlic',
-        'Onion',
-        'Tomato',
-        'Chicken',
-        'Beef',
-        'Pork',
-        'Eggs',
-        'Milk',
-        'Flour',
-        'Sugar',
-        'Bread',
-        'Potato',
-        'Rice',
-        'Pasta',
-        'Cheese',
-        'Yogurt',
-        'Lemon',
-        'Honey',
-        'Vinegar',
-        'Mayonnaise',
-        'Mustard',
-        'Ketchup',
-        'Soy sauce',
-        'Worcestershire sauce',
-        'Lettuce',
-        'Cucumber',
-        'Carrot',
-        'Celery',
-        'Bell pepper',
-        'Mushroom',
-        'Green beans',
-        'Broccoli',
-        'Cauliflower',
-        'Zucchini',
-        'Spinach',
-        'Parsley',
-        'Basil',
-        'Thyme',
-        'Rosemary',
-        'Oregano',
-        'Bay leaves',
-        'Cinnamon',
-        'Nutmeg',
-        'Vanilla extract',
-        'Lime',
-        'Ginger',
-        'Coconut milk',
-        'Cilantro',
-        'Curry powder',
-        'Paprika',
-        'Chili powder',
-        'Cumin',
-        'Coriander',
-        ]
+import json
+
+class Ingredients:
+    def __init__(self, ingredients_list=None):
+        self.ingredients_file = "my_ingredients.txt"
+        self.ingredients = []
+
+        if ingredients_list is not None:
+            self.ingredients = ingredients_list
+            self._update_ingredients_file()
+        else:
+            self.ingredients = self.load_ingredients()
     
     def __str__(self):
-        self.my_list = ""
-        for i in self.cooking_ingredients:
-            self.my_list += f"{i}, "
-        return self.my_list
+        return ", ".join(self.ingredients)
+
+    def _update_ingredients_file(self):
+        with open(self.ingredients_file, 'w') as file:
+            file.write(json.dumps(self.ingredients))
+
+    def load_ingredients(self):
+        try:
+            with open(self.ingredients_file, "r") as file:
+                return json.load(file)
+        except FileNotFoundError:
+            return []
+    
+    def save_ingredients(self):
+        with open(self.ingredients_file, "w") as file:
+            json.dump(self.ingredients, file)
+
         
     def add_ingredient(self, new_ingredient):
-        if type(new_ingredient) == str:
-            if new_ingredient not in self.cooking_ingredients:
-                self.cooking_ingredients.append(new_ingredient.capitalize())
-        elif type(new_ingredient) == list:
-            for ingredient in new_ingredient:
-                if ingredient not in self.cooking_ingredients:
-                    self.cooking_ingredients.append(ingredient.capitalize())
+        if isinstance(new_ingredient, str):
+            new_ingredient = new_ingredient.capitalize()
+            if new_ingredient not in self.ingredients:
+                self.ingredients.append(new_ingredient)
+                self.save_ingredients()
+        elif isinstance(new_ingredient, list):
+            new_ingredients = [ingredient.capitalize() for ingredient in new_ingredient]
+            for ingredient in new_ingredients:
+                if ingredient not in self.ingredients:
+                    self.ingredients.append(ingredient)
+            self.save_ingredients()
         else:
-            print("Can only add on item as a string or seveal ingredients as a list of strings")
+            print("Can only add one item as a string or several ingredients as a list of strings")
 
-
-    def remove_ingredient(self, new_ingredient):
-        if type(new_ingredient) == str:
-            if new_ingredient.capitalize() in self.cooking_ingredients:
-                self.cooking_ingredients.remove(new_ingredient.capitalize())
-                print(f"{new_ingredient.capitalize()} was removed")
+    def remove_ingredient(self, ingredient_to_remove):
+        if isinstance(ingredient_to_remove, str):
+            ingredient_to_remove = ingredient_to_remove.capitalize()
+            if ingredient_to_remove in self.ingredients:
+                self.ingredients.remove(ingredient_to_remove)
+                self.save_ingredients()
+                print(f"{ingredient_to_remove} was removed")
             else:
-                print(f"{new_ingredient.capitalize()} was not found in current ingredients")
-        elif type(new_ingredient) == list:
-            for ingredient in new_ingredient:
-                if ingredient.capitalize() in self.cooking_ingredients:
-                    self.cooking_ingredients.remove(ingredient.capitalize())
-                    print(f"{ingredient.capitalize()} was removed")
-                else:
-                    print(f"{ingredient.capitalize()} was not found in current ingredients") 
+                print(f"{ingredient_to_remove} was not found in current ingredients")
+        elif isinstance(ingredient_to_remove, list):
+            removed_ingredients = []
+            for ingredient in ingredient_to_remove:
+                ingredient = ingredient.capitalize()
+                if ingredient in self.ingredients:
+                    self.ingredients.remove(ingredient)
+                    removed_ingredients.append(ingredient)
+            if removed_ingredients:
+                self.save_ingredients()
+                print(f"{', '.join(removed_ingredients)} were removed")
+            else:
+                print("No ingredients were found in current ingredients")
         else:
-            print("Can only add on item as a string or seveal ingredients as a list of strings")
+            print("Can only remove one item as a string or several ingredients as a list of strings")
 
+            

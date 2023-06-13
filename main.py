@@ -1,80 +1,13 @@
 from ingredients import Ingredients
 from recipes import Recipes
+import samples
 
-# def main():
-#     pass
-    
-# cooking_ingredients = [
-#         'Salt',
-#         'Pepper',
-#         'Olive oil',
-#         'Butter',
-#         'Garlic',
-#         'Onion',
-#         'Tomato',
-#         'Chicken',
-#         'Beef',
-#         'Pork',
-#         'Eggs',
-#         'Milk',
-#         'Flour',
-#         'Sugar',
-#         'Bread',
-#         'Potato',
-#         'Rice',
-#         'Pasta',
-#         'Cheese',
-#         'Yogurt',
-#         'Lemon',
-#         'Honey',
-#         'Vinegar',
-#         'Mayonnaise',
-#         'Mustard',
-#         'Ketchup',
-#         'Soy sauce',
-#         'Worcestershire sauce',
-#         'Lettuce',
-#         'Cucumber',
-#         'Carrot',
-#         'Celery',
-#         'Bell pepper',
-#         'Mushroom',
-#         'Green beans',
-#         'Broccoli',
-#         'Cauliflower',
-#         'Zucchini',
-#         'Spinach',
-#         'Parsley',
-#         'Basil',
-#         'Thyme',
-#         'Rosemary',
-#         'Oregano',
-#         'Bay leaves',
-#         'Cinnamon',
-#         'Nutmeg',
-#         'Vanilla extract',
-#         'Lime',
-#         'Ginger',
-#         'Coconut milk',
-#         'Cilantro',
-#         'Curry powder',
-#         'Paprika',
-#         'Chili powder',
-#         'Cumin',
-#         'Coriander',
-#         ]    
-
-# my_recipes = Recipes()
-
-# my_kitchen = Ingredients(cooking_ingredients)
-
-
-# print(my_kitchen)
-# print(my_recipes)
+ing_ex = samples.ingredients_examples
+rec_ex = samples.recipes_examples
 
 def main():
-    ingredients = Ingredients()
-    recipes = Recipes()
+    ingredients = Ingredients(ing_ex)
+    recipes = Recipes(rec_ex)
 
     print("Welcome to the Recipe Manager!")
     print("-------------------------------")
@@ -83,7 +16,7 @@ def main():
         print("\nCurrent Statistics:")
         print("-------------------")
         print(f"Number of Ingredients: {len(ingredients.ingredients)}")
-        print(f"Number of Recipes: {len(recipes.recipes)})
+        print(f"Number of Recipes: {len(recipes.recipes)}")
 
         print("\nOptions:")
         print("--------")
@@ -98,7 +31,7 @@ def main():
 
         if choice == "1":
             print("\n-- Get a random recipe --")
-            random_recipe = recipes.get_random_recipe_with_enough_ingredients()
+            random_recipe = recipes.get_random_recipe_with_enough_ingredients(ingredients.ingredients)
             if random_recipe is not None:
                 print("Title:", random_recipe['name'])
                 print("Preparation Time:", random_recipe['time'], "minutes")
@@ -131,7 +64,7 @@ def main():
 
         elif choice == "2":
             print("\n-- Get a list of all current possible recipes --")
-            all_recipes = recipes.get_all_recipes_with_enough_ingredients()
+            all_recipes = recipes.get_all_recipes_with_enough_ingredients(ingredients.ingredients)
             for recipe in all_recipes:
                 print("Title:", recipe['name'])
                 print("Preparation Time:", recipe['time'], "minutes")
