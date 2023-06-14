@@ -1,5 +1,15 @@
+"""
+This files handles the class that keeps track of the recipes. Stores them in a txt.
+Each recipe is a dictionary on itself with a "name", "time", and a "ingredients" list.
+The main will interact with this class so as to check the requiered ingredients and compare with those stored in the Ingredients object
+The main will also reques for a random recipe, a list of thouse for with the ingredients are present.
+For each recipe it should also be able the request any or all recipes keys and/values.
+This class will contain methods to review current recipes, add or remove them.
+"""
+
 import json
 import random
+
 
 class Recipes:
     def __init__(self, recipes_dict=None):
@@ -10,16 +20,36 @@ class Recipes:
             self.recipes = recipes_dict
             self._update_recipes_file()
 
+    # def add_recipe(self, recipe):
+    #     if self._is_valid_recipe(recipe):
+    #         code = self._generate_code(recipe['name'])
+    #         if code not in self.recipes:
+    #             self.recipes[code] = recipe
+    #             self._update_recipes_file()
+    #         else:
+    #             print("Recipe already exists")
+
     def add_recipe(self, recipe):
         if self._is_valid_recipe(recipe):
             code = self._generate_code(recipe['name'])
-            self.recipes[code] = recipe
-            self._update_recipes_file()
+            if code not in self.recipes:
+                self.recipes[code] = {
+                    'name': recipe['name'],
+                    'time': recipe['time'],
+                    'ingredients': recipe['ingredients']
+                }
+                self._update_recipes_file()
+            else:
+                print("Recipe already exists")
+
+        print("Recipe added successfully!")
 
     def remove_recipe(self, code):
         if code in self.recipes:
             del self.recipes[code]
             self._update_recipes_file()
+        else:
+            print(f"Recipe {code} was not found")
 
     def _is_valid_recipe(self, recipe):
         required_keys = {'name', 'ingredients', 'time'}
@@ -57,7 +87,7 @@ class Recipes:
         for recipe in self.recipes.values():
             if all(ingredient in ingredient_list for ingredient in recipe['ingredients']):
                 eligible_recipes.append(recipe)
-        
+
         if eligible_recipes:
             random_recipe = random.choice(eligible_recipes)
             return random_recipe
@@ -73,7 +103,7 @@ class Recipes:
         return eligible_recipes
 
     def get_recipe_details(self, recipe_id):
-        if recipe_id in self.recipes:
+        try:
             recipe = self.recipes[recipe_id]
             details = {
                 "name": recipe["name"],
@@ -81,76 +111,15 @@ class Recipes:
                 "time": recipe["time"]
             }
             return details
-        else:
-            print(f"Recipe {recipe_id} was not found")
-            return None
-
-
-# recipes_dict = {
-#     'SPO': {
-#         'name': 'Spaghetti Bolognese',
-#         'ingredients': ['Pasta', 'Ground beef', 'Tomato', 'Onion', 'Garlic', 'Olive oil'],
-#         'time': '45',
-#     },
-#     'OML': {
-#         'name': 'Omelette',
-#         'ingredients': ['Eggs', 'Butter', 'Salt', 'Pepper'],
-#         'time': '15',
-#     },
-#     'CTP': {
-#         'name': 'Chicken Tacos',
-#         'ingredients': ['Chicken', 'Tortillas', 'Lettuce', 'Tomato', 'Onion', 'Cilantro'],
-#         'time': '30',
-#     },
-#     'PBR': {
-#         'name': 'Potato Salad',
-#         'ingredients': ['Potato', 'Mayonnaise', 'Mustard', 'Onion', 'Celery', 'Salt', 'Pepper'],
-#         'time': '20',
-#     },
-#     'CTM': {
-#         'name': 'Chicken Tikka Masala',
-#         'ingredients': ['Chicken', 'Tomato', 'Onion', 'Garlic', 'Ginger', 'Cream', 'Spices'],
-#         'time': '60',
-#     },
-#     'BFC': {
-#         'name': 'Beef Stroganoff',
-#         'ingredients': ['Beef', 'Mushroom', 'Onion', 'Sour cream', 'Flour', 'Butter'],
-#         'time': '45',
-#     },
-#     'SCS': {
-#         'name': 'Scrambled Eggs',
-#         'ingredients': ['Eggs', 'Milk', 'Salt', 'Pepper'],
-#         'time': '10',
-#     },
-#     'GCR': {
-#         'name': 'Grilled Cheese Sandwich',
-#         'ingredients': ['Bread', 'Cheese', 'Butter'],
-#         'time': '10',
-#     },
-#     'FGS': {
-#         'name': 'French Toast',
-#         'ingredients': ['Bread', 'Eggs', 'Milk', 'Cinnamon'],
-#         'time': '15',
-#     },
-#     'CCH': {
-#         'name': 'Classic Caesar Salad',
-#         'ingredients': ['Romaine lettuce', 'Caesar dressing', 'Parmesan cheese', 'Croutons'],
-#         'time': '10',
-#     },
-# }
-
-# my_recipes = Recipes(recipes_dict)
-
-# # Adding a new recipe
-# new_recipe = {
-#     'name': 'Tomato Soup',
-#     'ingredients': ['Tomato', 'Onion', 'Garlic', 'Olive oil'],
-#     'time': '30',
-# }
-# my_recipes.add_recipe(new_recipe)
-
-# # Removing a recipe
-# my_recipes.remove_recipe('OML')
-
-# # Printing the recipes
-# print(my_recipes)
+        except KeyError:
+            raise KeyError(f"Recipe {recipe_id} was not found")
+        
+    def get_recipes_using_ingredient(self, ingredient):
+        matching_recipes = []
+        for recipe in self.recipes.values():
+            if ingredient in recipe['ingredients']:
+                matching_recipes.append(recipe)
+        return matching_recipes
+    
+    def get_all_recipes(self):
+        return list(self.recipes.values())

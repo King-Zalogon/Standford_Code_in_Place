@@ -9,20 +9,17 @@ import json
 class Ingredients:
     def __init__(self, ingredients_list=None):
         self.ingredients_file = "my_ingredients.txt"
-        self.ingredients = []
+        self.ingredients = self.load_ingredients()
 
         if ingredients_list is not None:
-            self.ingredients = ingredients_list
-            self._update_ingredients_file()
-        else:
-            self.ingredients = self.load_ingredients()
+            self.add_ingredient(ingredients_list)
     
     def __str__(self):
         return ", ".join(self.ingredients)
 
     def _update_ingredients_file(self):
         with open(self.ingredients_file, 'w') as file:
-            file.write(json.dumps(self.ingredients))
+            json.dump(self.ingredients, file)
 
     def load_ingredients(self):
         try:
@@ -35,21 +32,28 @@ class Ingredients:
         with open(self.ingredients_file, "w") as file:
             json.dump(self.ingredients, file)
 
-        
     def add_ingredient(self, new_ingredient):
         if isinstance(new_ingredient, str):
             new_ingredient = new_ingredient.capitalize()
             if new_ingredient not in self.ingredients:
                 self.ingredients.append(new_ingredient)
                 self.save_ingredients()
+            else:
+                print(f"{new_ingredient} already exists in current ingredients")
         elif isinstance(new_ingredient, list):
             new_ingredients = [ingredient.capitalize() for ingredient in new_ingredient]
+            added_ingredients = []
             for ingredient in new_ingredients:
                 if ingredient not in self.ingredients:
                     self.ingredients.append(ingredient)
-            self.save_ingredients()
+                    added_ingredients.append(ingredient)
+            if added_ingredients:
+                self.save_ingredients()
+                print(f"{', '.join(added_ingredients)} added to current ingredients")
+            else:
+                print("No new ingredients were added")
         else:
-            print("Can only add one item as a string or several ingredients as a list of strings")
+            raise TypeError("Can only add one item as a string or several ingredients as a list of strings")
 
     def remove_ingredient(self, ingredient_to_remove):
         if isinstance(ingredient_to_remove, str):
@@ -73,6 +77,7 @@ class Ingredients:
             else:
                 print("No ingredients were found in current ingredients")
         else:
-            print("Can only remove one item as a string or several ingredients as a list of strings")
-
-            
+            raise TypeError("Can only remove one item as a string or several ingredients as a list of strings")
+        
+    def get_all_ingredients(self):
+        return self.ingredients
